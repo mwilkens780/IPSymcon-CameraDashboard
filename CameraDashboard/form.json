@@ -1,0 +1,49 @@
+{
+  "elements": [
+    {
+      "type": "List",
+      "name": "cameras",
+      "caption": "Kameras",
+      "rowCount": 6,
+      "add": true,
+      "delete": true,
+      "columns": [
+        { "caption": "Name (leer = Gerätename)", "name": "name", "width": "220px", "add": "", "edit": { "type": "ValidationTextBox" } },
+        { "caption": "Kamera-Instanz", "name": "instance", "width": "260px", "add": 0, "edit": { "type": "SelectInstance" } }
+      ],
+      "values": []
+    },
+    {
+      "type": "Label",
+      "caption": "Beliebige Blink-Home-Geräteinstanzen (Modul 'Blink Home Device') oder Ring-Kamera-Instanzen (Modul 'Ring Camera', separates IPSymcon-Ring-Modul). Bild, Batterie, Bewegungserkennung (schaltbar) und Snapshot-Auslöser werden automatisch anhand bekannter Idents der jeweiligen Instanz gefunden -- keine einzelnen Variablen verdrahten."
+    },
+    {
+      "type": "SelectInstance",
+      "name": "sync_instance",
+      "caption": "Blink Sync Module (optional)"
+    },
+    {
+      "type": "Label",
+      "caption": "Für den systemweiten Aufzeichnungs-Schalter und die letzte erkannte Bewegung -- die 'Blink Home Sync Modul'-Instanz."
+    },
+    {
+      "type": "NumberSpinner",
+      "name": "update_interval",
+      "caption": "Aktualisierungsintervall (Sekunden)",
+      "minimum": 30,
+      "suffix": "s"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Button",
+      "caption": "Jetzt aktualisieren",
+      "onClick": "CAMD_Refresh($id);"
+    }
+  ],
+  "status": [
+    { "code": 102, "icon": "active",   "caption": "Aktiv" },
+    { "code": 200, "icon": "error",    "caption": "Fehler – Details im IPS-Log" },
+    { "code": 201, "icon": "inactive", "caption": "Nicht konfiguriert – mindestens eine Kamera oder das Sync Module hinzufügen" }
+  ]
+}

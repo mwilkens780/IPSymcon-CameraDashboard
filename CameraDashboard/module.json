@@ -1,0 +1,12 @@
+{
+    "id": "{90DFD64C-6EE0-4A24-AC00-0B0AAE1C3C72}",
+    "name": "Camera Dashboard",
+    "type": 3,
+    "vendor": "Martin Wilkens",
+    "aliases": [],
+    "dependencies": [],
+    "parentRequirements": [],
+    "childRequirements": [],
+    "implemented": [],
+    "prefix": "CAMD"
+}
