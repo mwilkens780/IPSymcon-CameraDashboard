@@ -3,8 +3,8 @@
     "author": "Martin Wilkens",
     "name": "Camera Dashboard",
     "description": "Dashboard-Kachel fuer Kameras: liest bereits vorhandene Blink-Home-Geraeteinstanzen (und, sobald konfiguriert, Ring-Kamera-Instanzen aus dem separaten IPSymcon-Ring-Modul) automatisch aus -- Standbild, Batteriestatus, Bewegungserkennung (schaltbar), Snapshot-Ausloeser. Kein eigener API-Client, baut auf bestehenden Geraeteinstanzen auf.",
-    "version": "1.1",
-    "build": 2,
-    "date": 1789303397,
+    "version": "1.2",
+    "build": 3,
+    "date": 1789310905,
     "url": "https://github.com/mwilkens780/IPSymcon-CameraDashboard"
 }

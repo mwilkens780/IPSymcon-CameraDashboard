@@ -224,15 +224,57 @@ class CameraDashboard extends IPSModule
         if (($media['MediaType'] ?? null) !== MEDIATYPE_IMAGE) {
             return '';
         }
-        $mime = $this->mimeForExtension((string) pathinfo((string) ($media['MediaFile'] ?? ''), PATHINFO_EXTENSION));
-        if ($mime === '') {
-            return '';
-        }
         $content = @IPS_GetMediaContent($mediaId);
         if ($content === false || $content === '') {
             return '';
         }
-        return $mime . $content;
+
+        $raw      = base64_decode($content, true);
+        $resized  = $raw !== false ? $this->downscaleJpeg($raw) : null;
+        if ($resized !== null) {
+            return 'data:image/jpeg;base64,' . base64_encode($resized);
+        }
+
+        $mime = $this->mimeForExtension((string) pathinfo((string) ($media['MediaFile'] ?? ''), PATHINFO_EXTENSION));
+        return $mime === '' ? '' : $mime . $content;
+    }
+
+    /**
+     * Blink/Ring liefern Kamera-Standbilder in voller Originalaufloesung
+     * (teils >200 KB pro Bild als JPEG). Die Kachel zeigt jedes Bild nur in
+     * einer festen, kleinen Box (object-fit:cover) -- volle Aufloesung bringt
+     * keinen sichtbaren Mehrwert, reisst aber mit mehreren echten Kameras die
+     * 1-MiB-Grenze von GetVisualizationTile() ("Output-Buffer exceeds
+     * Limit", siehe [[project_camera_dashboard]]-Historie). Deshalb serverseitig
+     * auf maximal 480px Breite herunterskalieren und auf JPEG q70
+     * komprimieren, bevor es base64-kodiert eingebettet wird. Bilder, die
+     * schon schmaler sind, oder wenn GD fehlt, bleiben unveraendert (null).
+     */
+    private function downscaleJpeg(string $raw): ?string
+    {
+        if (!function_exists('imagecreatefromstring')) {
+            return null;
+        }
+        $src = @imagecreatefromstring($raw);
+        if ($src === false) {
+            return null;
+        }
+        $width    = imagesx($src);
+        $height   = imagesy($src);
+        $maxWidth = 480;
+        if ($width <= $maxWidth) {
+            imagedestroy($src);
+            return null;
+        }
+        $newHeight = (int) round($height * ($maxWidth / $width));
+        $dst       = imagecreatetruecolor($maxWidth, $newHeight);
+        imagecopyresampled($dst, $src, 0, 0, 0, 0, $maxWidth, $newHeight, $width, $height);
+        imagedestroy($src);
+        ob_start();
+        imagejpeg($dst, null, 70);
+        $data = ob_get_clean();
+        imagedestroy($dst);
+        return $data !== false && $data !== '' ? $data : null;
     }
 
     private function mimeForExtension(string $ext): string
