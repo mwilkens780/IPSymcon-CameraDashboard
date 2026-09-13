@@ -269,7 +269,19 @@ class CameraDashboard extends IPSModule
         $syncBlock = $this->renderSync($d['sync']);
 
         $updatedEsc = htmlspecialchars($d['updated'], ENT_QUOTES);
-        $initJson   = json_encode($d);
+
+        // The initial <img src="data:..."> in renderCamera() already carries the
+        // image data -- state.cameras[].image would just duplicate every base64
+        // thumbnail a second time here, which is what pushed the tile past IPS's
+        // 1 MiB GetVisualizationTile() output limit. state is only overwritten
+        // wholesale in handleMessage(), never read before the first push, so the
+        // image field can be dropped from this initial blob without any effect.
+        $initData = $d;
+        foreach ($initData['cameras'] as &$cam) {
+            $cam['image'] = '';
+        }
+        unset($cam);
+        $initJson = json_encode($initData);
 
         return <<<HTML
 <!DOCTYPE html>
