@@ -343,7 +343,7 @@ body{overflow-y:auto;overflow-x:hidden;font-family:-apple-system,BlinkMacSystemF
 .badge-amber{background:#4a3510;border-color:#8a6a20;color:#f0c060}
 .badge-green{background:#124a1e;border-color:#2f8a44;color:#7ee89a}
 .empty{font-size:12px;color:#4a6a8a;padding:10px 0}
-.cam-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.cam-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:8px}
 /* Bild-zuerst-Kachel: das Bild IST die Kachel (aspect-ratio bestimmt die Form),
    Name/Batterie/Bewegung/Snapshot liegen als Verlaufs-Overlay darueber statt
    als eigene Zeilen darunter -- sonst bleibt auf einer breiten, aber flachen
