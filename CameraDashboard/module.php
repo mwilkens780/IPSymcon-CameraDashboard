@@ -343,11 +343,16 @@ body{overflow-y:auto;overflow-x:hidden;font-family:-apple-system,BlinkMacSystemF
 .badge-amber{background:#4a3510;border-color:#8a6a20;color:#f0c060}
 .badge-green{background:#124a1e;border-color:#2f8a44;color:#7ee89a}
 .empty{font-size:12px;color:#4a6a8a;padding:10px 0}
-.cam-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.cam-tile{display:flex;flex-direction:column;gap:6px;background:#131f33;border-radius:10px;padding:8px;overflow:hidden}
-.cam-img-wrap{position:relative;width:100%;aspect-ratio:4/3;border-radius:8px;overflow:hidden;background:#0a1526}
-.cam-img-wrap img{width:100%;height:100%;object-fit:cover;display:block}
-.cam-name{font-size:12px;font-weight:600;color:#d0e8ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cam-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+/* Bild-zuerst-Kachel: das Bild IST die Kachel (aspect-ratio bestimmt die Form),
+   Name/Batterie/Bewegung/Snapshot liegen als Verlaufs-Overlay darueber statt
+   als eigene Zeilen darunter -- sonst bleibt auf einer breiten, aber flachen
+   Pad-Querformat-Kachel kaum noch Hoehe fuers eigentliche Bild. */
+.cam-tile{position:relative;width:100%;aspect-ratio:16/10;border-radius:10px;overflow:hidden;background:#0a1526}
+.cam-tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.cam-overlay{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(to top,rgba(5,12,22,.95),rgba(5,12,22,.65) 60%,transparent);padding:16px 8px 6px;display:flex;flex-direction:column;gap:3px}
+.cam-overlay .sub{color:#b8d4ee}
+.cam-name{font-size:12px;font-weight:600;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cam-row{display:flex;align-items:center;justify-content:space-between;gap:6px}
 .toggle{position:relative;width:34px;height:20px;flex:none;display:inline-block}
 .toggle input{opacity:0;position:absolute;width:100%;height:100%;margin:0;cursor:pointer;z-index:1}
@@ -470,15 +475,13 @@ HTML;
             $battHtml = "<span id='{$identEsc}_batt' class='sub'>🔋 " . htmlspecialchars($battText, ENT_QUOTES) . '</span>';
         }
 
-        $motionHtml = '';
+        $motionToggle = '';
         if ($cam['motion'] !== null) {
             $checked = $cam['motion'] ? ' checked' : '';
             $label   = $cam['motion'] ? $this->Translate('Aktiv') : $this->Translate('Inaktiv');
-            $motionHtml = <<<HTML
-<div class="cam-row">
-  <span id='{$identEsc}_motion_label' class="sub">{$label}</span>
-  <label class="toggle"><input id='{$identEsc}_motion_input' type="checkbox"{$checked} onchange="requestAction('{$cam['ident']}_motion', this.checked)"><span class="toggle-track"><span class="toggle-thumb"></span></span></label>
-</div>
+            $motionToggle = <<<HTML
+<span id='{$identEsc}_motion_label' class="sub">{$label}</span>
+<label class="toggle"><input id='{$identEsc}_motion_input' type="checkbox"{$checked} onchange="requestAction('{$cam['ident']}_motion', this.checked)"><span class="toggle-track"><span class="toggle-thumb"></span></span></label>
 HTML;
         }
 
@@ -491,12 +494,17 @@ HTML;
 HTML;
         }
 
+        $controlsRow = ($motionToggle !== '' || $snapBtn !== '')
+            ? "<div class=\"cam-row\">{$motionToggle}{$snapBtn}</div>"
+            : '';
+
         return <<<HTML
 <div class="cam-tile">
-  <div class="cam-img-wrap">{$imgHtml}</div>
-  <div class="cam-row"><span class="cam-name">{$nameEsc}</span>{$battHtml}</div>
-  {$motionHtml}
-  {$snapBtn}
+  {$imgHtml}
+  <div class="cam-overlay">
+    <div class="cam-row"><span class="cam-name">{$nameEsc}</span>{$battHtml}</div>
+    {$controlsRow}
+  </div>
 </div>
 HTML;
     }
